@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simple Todo List</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      #todo-app {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        text-align: center;
+        color: #333;
+      }
+
+      input {
+        padding: 8px;
+        margin-right: 8px;
+        border-radius: 5px;
+      }
+
+      button {
+        padding: 8px;
+        cursor: pointer;
+      }
+
+      ul {
+        list-style-type: none;
+        padding: 0;
+      }
+
+      li {
+        margin: 8px 0;
+        padding: 8px;
+        display: flex;
+        align-items: center;
+        background-color: #fff;
+        border-radius: 4px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      }
+
+      span {
+        flex: 1;
+        word-wrap: break-word;
+      }
+
+      button.delete {
+        background-color: #ff5c5c;
+        color: white;
+        margin-right: 4px;
+      }
+
+      button.complete {
+        background-color: #5cd65c;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script src="https://www.unpkg.com/react@18.2.0/umd/react.development.js"></script>
+    <script src="https://www.unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script type="text/babel">
+      const { useState } = React;
+
+      const AddTodo = ({ addTodo }) => {
+        const [task, setTask] = useState('');
+
+        const handleAddTodo = () => {
+          if (task.trim() !== '') {
+            addTodo(task);
+            setTask('');
+          }
+        };
+
+        return (
+          <div>
+            <input
+              type="text"
+              value={task}
+              onChange={(e) => setTask(e.target.value)}
+              placeholder="Add new task"
+            />
+            <button onClick={handleAddTodo}>Add</button>
+          </div>
+        );
+      };
+
+      const TodoList = ({ todos, deleteTodo, toggleComplete }) => {
+        return (
+          <ul>
+            {todos.map((todo, index) => (
+              <li key={index}>
+                <span
+                  style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}
+                >
+                  {todo.task}
+                </span>
+                <button
+                  className="delete"
+                  onClick={() => deleteTodo(index)}
+                >
+                  Delete
+                </button>
+                <button
+                  className="complete"
+                  onClick={() => toggleComplete(index)}
+                >
+                  {todo.completed ? 'Undo' : 'Complete'}
+                </button>
+              </li>
+            ))}
+          </ul>
+        );
+      };
+
+      const TodoApp = () => {
+        const [todos, setTodos] = useState([]);
+
+        const addTodo = (task) => {
+          setTodos([...todos, { task, completed: false }]);
+        };
+
+        const deleteTodo = (index) => {
+          setTodos(todos.slice(0, index).concat(todos.slice(index + 1)));
+        };
+
+        const toggleComplete = (index) => {
+          setTodos(
+            todos.map((todo, i) =>
+              i === index ? { ...todo, completed: !todo.completed } : todo
+            )
+          );
+        };
+
+        return (
+          <div id="todo-app">
+            <h1>Simple Todo List</h1>
+            <AddTodo addTodo={addTodo} />
+            <TodoList
+              todos={todos}
+              deleteTodo={deleteTodo}
+              toggleComplete={toggleComplete}
+            />
+          </div>
+        );
+      };
+
+      ReactDOM.render(<TodoApp />, document.getElementById('root'));
+    </script>
+  </body>
+</html>
+
+
